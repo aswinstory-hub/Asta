@@ -2,12 +2,6 @@ using System;
 
 namespace Asta.Core.Application;
 
-public interface iWindow
-{   
-    void run();
-}
-
-
 public class Application
 {
 

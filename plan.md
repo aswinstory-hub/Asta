@@ -179,7 +179,7 @@ Core engine systems.
 ```text
 Asta.Core/
 ├── Application.cs
-├── Window.cs
+├── IWindow.cs
 ├── Input.cs
 ├── Time.cs
 └── Logger.cs
@@ -213,6 +213,7 @@ Rendering backend.
 
 ```text
 Asta.Rendering/
+├── SilkWindow.cs
 ├── Renderer.cs
 ├── Shader.cs
 ├── Texture.cs

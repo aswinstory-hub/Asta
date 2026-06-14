@@ -1,40 +1,68 @@
+using System.Drawing;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
+using Silk.NET.OpenGL;
 using Asta.Core.Application;
 
 namespace Asta.Rendering.SilkWindow;
 
 public class SilkWindow : iWindow
 {
-    private IWindow window = default!;
+    private static IWindow _window = default!;
+    private static GL _gl = default!;
 
     public void run()
     {
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(800, 600);
-        options.Title = "Asta Engine";
-        window = Window.Create(options);
+        options.Title = "Asta";
+        options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
 
-        window.Load += OnLoad;
-        window.Render += OnRender;
-        window.Update += OnUpdate;
+        _window = Window.Create(options);
 
-        window.Run();
+        _window.Load += OnLoad;
+        _window.Render += OnRender;
+        _window.Update += OnUpdate;
+        _window.Closing += OnClosing;
+
+        _window.Run();
     }
 
     private void OnLoad()
     {
-        // Initialization code here
+        _gl = _window.CreateOpenGL();
+
+        IInputContext input = _window.CreateInput();
+        foreach (var keyboard in input.Keyboards)
+        {
+            keyboard.KeyDown += OnKeyDown;
+        }
+
+        _gl.ClearColor(Color.SkyBlue);
     }
 
     private void OnRender(double deltaTime)
     {
-        // Rendering code here
+        _gl.Clear(ClearBufferMask.ColorBufferBit);
+
     }
 
     private void OnUpdate(double deltaTime)
     {
         // Update logic here
+    }
+
+    private void OnKeyDown(IKeyboard keyboard, Key key, int keyCode)
+    {
+        if (key == Key.Escape)
+        {
+            _window.Close();
+        }
+    }
+
+    private void OnClosing()
+    {
+        _gl?.Dispose();
     }
 }

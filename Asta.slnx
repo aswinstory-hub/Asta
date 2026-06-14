@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Source/">
+    <Project Path="Source/Asta.Core/Asta.Core.csproj" />
+    <Project Path="Source/Asta.Editor/Asta.Editor.csproj" />
+    <Project Path="Source/Asta.Rendering/Asta.Rendering.csproj" />
+    <Project Path="Source/Asta.Runtime/Asta.Runtime.csproj" />
+  </Folder>
+</Solution>

@@ -12,15 +12,21 @@ public class SilkWindow : iWindow
     private static IWindow _window = default!;
     private Renderer _renderer = new Renderer();
     
-
-    public void run()
+    public void create()
     {
+        Logger.Log("Creating window...");
+
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(800, 600);
         options.Title = "Asta";
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
 
         _window = Window.Create(options);
+    }
+
+
+    public void run()
+    {
 
         _window.Load += OnLoad;
         _window.Render += OnRender;
@@ -30,7 +36,7 @@ public class SilkWindow : iWindow
         _window.Run();
     }
 
-    private void OnLoad()
+    public void OnLoad()
     {
 
         IInputContext input = _window.CreateInput();
@@ -43,14 +49,14 @@ public class SilkWindow : iWindow
     
     }
 
-    private void OnRender(double deltaTime)
+    public void OnRender(double deltaTime)
     {
         
         _renderer.render();
 
     }
 
-    private void OnUpdate(double deltaTime)
+    public void OnUpdate(double deltaTime)
     {
         // Update logic here
     }
@@ -63,7 +69,7 @@ public class SilkWindow : iWindow
         }
     }
 
-    private void OnClosing()
+    public void OnClosing()
     {
         _renderer.dispose();
     }

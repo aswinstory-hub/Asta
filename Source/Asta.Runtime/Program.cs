@@ -8,6 +8,7 @@ class Program
 
     static void Main()
     {
+        Logger.Log("Application started.");
         Application app = new Application(new SilkWindow());
         app.run();
     }

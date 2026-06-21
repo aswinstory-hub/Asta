@@ -4,18 +4,23 @@ namespace Asta.Core.Application;
 
 public class Application
 {
+    public iWindow _window; 
 
-    private readonly iWindow _window;
-
-    public Application(iWindow window)
+    public Application(iWindow SilkWindow)
     {
-        _window = window;
+        _window = SilkWindow;
     }
 
 
     public void run()
     {
-        _window.run();
+        init();
+    }
+
+    private void init()
+    {
+        Logger.Log("Initializing application...");
+        _window.create();
     }
 
 }

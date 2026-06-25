@@ -2,7 +2,12 @@
 
 public interface iWindow
 {   
+
+    public bool IsRunning { get; set;}
+
     void run();
+
+    void Run_window();
 
     void create();
 

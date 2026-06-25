@@ -1,9 +1,7 @@
-using System.Drawing;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
-using Silk.NET.OpenGL;
-using Asta.Core.Application;
+
 
 namespace Asta.Rendering.SilkWindow;
 
@@ -11,6 +9,8 @@ public class SilkWindow : iWindow
 {
     private static IWindow _window = default!;
     private Renderer _renderer = new Renderer();
+
+    public bool IsRunning { get; set;}  = false;
     
     public void create()
     {
@@ -22,6 +22,8 @@ public class SilkWindow : iWindow
         options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
 
         _window = Window.Create(options);
+
+        Logger.Log("Window created successfully");
     }
 
 
@@ -33,6 +35,12 @@ public class SilkWindow : iWindow
         _window.Update += OnUpdate;
         _window.Closing += OnClosing;
 
+    }
+
+    public void Run_window()
+    {
+        IsRunning = true;
+        
         _window.Run();
     }
 
@@ -45,14 +53,14 @@ public class SilkWindow : iWindow
             keyboard.KeyDown += OnKeyDown;
         }
 
-        _renderer.load(_window);
+        //_renderer.load(_window);
     
     }
 
     public void OnRender(double deltaTime)
     {
         
-        _renderer.render();
+        //_renderer.render();
 
     }
 
@@ -71,6 +79,8 @@ public class SilkWindow : iWindow
 
     public void OnClosing()
     {
-        _renderer.dispose();
+        Logger.Log("Closing window...");
+
+        //_renderer.dispose();
     }
 }

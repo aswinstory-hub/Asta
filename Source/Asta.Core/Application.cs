@@ -1,11 +1,10 @@
-using System;
-
 namespace Asta.Core.Application;
 
 public class Application
 {
     private iWindow _window = default!; 
     public string windowName = "Asta";
+
 
     public Application(iWindow window)
     {
@@ -27,7 +26,12 @@ public class Application
         while (_window.IsOpen)
         {
             _window.ProcessEvents();
-    
+
+            Time.Update();
+
+            Console.WriteLine($"Current Time: {Time.CurrentTime:F2}s, Delta Time: {Time.DeltaTime:F4}s, Instant FPS: {Time.InstantFps:F2}, Average FPS: {Time.AverageFps:F2}");
+        
+            Time.CapFrameRate();
         }
 
         Logger.Log("Shutting down window");
@@ -40,6 +44,8 @@ public class Application
         Logger.Log("Initializing application...");
         
         _window.Initialize();
+
+        Time.Initialize();
     }
 
 }

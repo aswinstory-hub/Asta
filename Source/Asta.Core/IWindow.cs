@@ -3,20 +3,19 @@
 public interface iWindow
 {   
 
-    public bool IsRunning { get; set;}
+    public bool IsOpen { get; }
 
-    void run();
+    //public iWindow NativeWindow { get; set;}
 
-    void Run_window();
+    public void SetWindow(string title, int width, int height);
 
-    void create();
+    public void Initialize();
 
-    void OnLoad();
+    public void ProcessEvents();
 
-    void OnRender(double deltaTime);
+    public void PrepareRenderFrame();
 
-    void OnUpdate(double deltaTime);
+    public void SwapBuffers();
 
-    void OnClosing();
-
+    public void Shutdown();
 }

@@ -6,81 +6,57 @@ using Silk.NET.Windowing;
 namespace Asta.Rendering.SilkWindow;
 
 public class SilkWindow : iWindow
-{
-    private static IWindow _window = default!;
-    private Renderer _renderer = new Renderer();
-
-    public bool IsRunning { get; set;}  = false;
-    
-    public void create()
     {
-        Logger.Log("Creating window...");
+        // Internal Silk.NET window reference
+        private IWindow _nativeWindow = default!;
 
-        var options = WindowOptions.Default;
-        options.Size = new Vector2D<int>(800, 600);
-        options.Title = "Asta";
-        options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(3, 3));
+        // Exposed property for your loop condition: while(Window.IsOpen)
+        public bool IsOpen => !_nativeWindow.IsClosing;
 
-        _window = Window.Create(options);
+        // Exposes the underlying Silk.NET window if your Renderer/Input subsystems need to query it directly
+        public IWindow NativeWindow => _nativeWindow;
 
-        Logger.Log("Window created successfully");
-    }
-
-
-    public void run()
-    {
-
-        _window.Load += OnLoad;
-        _window.Render += OnRender;
-        _window.Update += OnUpdate;
-        _window.Closing += OnClosing;
-
-    }
-
-    public void Run_window()
-    {
-        IsRunning = true;
-        
-        _window.Run();
-    }
-
-    public void OnLoad()
-    {
-
-        IInputContext input = _window.CreateInput();
-        foreach (var keyboard in input.Keyboards)
+        public void SetWindow(string title, int width, int height)
         {
-            keyboard.KeyDown += OnKeyDown;
+            // 1. Configure the window options
+            var options = WindowOptions.Default;
+            options.Size = new Vector2D<int>(width, height);
+            options.Title = title;
+            options.API = GraphicsAPI.Default; // Automatically sets up OpenGL, Vulkan, etc.
+
+            // 2. Create the window instance (Does NOT open or display it yet)
+            _nativeWindow = Window.Create(options);
         }
 
-        //_renderer.load(_window);
-    
-    }
-
-    public void OnRender(double deltaTime)
-    {
-        
-        //_renderer.render();
-
-    }
-
-    public void OnUpdate(double deltaTime)
-    {
-        // Update logic here
-    }
-
-    private void OnKeyDown(IKeyboard keyboard, Key key, int keyCode)
-    {
-        if (key == Key.Escape)
+        public void Initialize()
         {
-            _window.Close();
+            // 3. Bootstraps OS hooks, creates the native handle and graphics context.
+            // Control returns immediately back to your application setup.
+            _nativeWindow.Initialize();
+        }
+
+        public void ProcessEvents()
+        {
+            // 4. Polls the OS for window resizing, moving, closing, and hardware peripheral input events.
+            _nativeWindow.DoEvents();
+        }
+
+        public void PrepareRenderFrame()
+        {
+            // 5. Signals the window to prepare its active graphics context for drawing.
+            _nativeWindow.DoRender();
+        }
+
+        public void SwapBuffers()
+        {
+            // 6. Flips the back-buffer to the screen. 
+            // In Silk.NET, this is handled through the active graphics context.
+            _nativeWindow.GLContext?.SwapBuffers();
+        }
+
+        public void Shutdown()
+        {
+            // 7. Frees the native window handle and unbinds graphics contexts from memory.
+            _nativeWindow.Dispose();
         }
     }
-
-    public void OnClosing()
-    {
-        Logger.Log("Closing window...");
-
-        //_renderer.dispose();
-    }
-}

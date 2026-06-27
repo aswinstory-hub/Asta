@@ -14,10 +14,12 @@ class Program
         Logger.Log("Create Engine Window");
         SilkWindow engineWindow = new SilkWindow();
 
+        Application app = new Application(engineWindow);
+
         Logger.Log("Connect to input system");
         Input.Initialize(engineWindow);
 
-        Application app = new Application(engineWindow);
+
         app.run();
     }
 }

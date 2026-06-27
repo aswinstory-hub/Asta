@@ -4,6 +4,7 @@ public class Application
 {
     private iWindow _window = default!; 
     public string windowName = "Asta";
+    private bool _isRunning = false;
 
 
     public Application(iWindow window)
@@ -23,20 +24,26 @@ public class Application
 
         Logger.Log("Entering main loop...");
 
-        while (_window.IsOpen)
+        _isRunning = true;
+
+        while (_window.IsOpen && _isRunning)
         {
             _window.ProcessEvents();
 
             Time.Update();
 
-            Console.WriteLine($"Current Time: {Time.CurrentTime:F2}s, Delta Time: {Time.DeltaTime:F4}s, Instant FPS: {Time.InstantFps:F2}, Average FPS: {Time.AverageFps:F2}");
-        
+            HandleInput();
+
+            // Console.WriteLine($"Current Time: {Time.CurrentTime:F2}s, Delta Time: {Time.DeltaTime:F4}s, Instant FPS: {Time.InstantFps:F2}, Average FPS: {Time.AverageFps:F2}");
+
+
+            //_window.PrepareRenderFrame();
+            //_window.SwapBuffers();
             Time.CapFrameRate();
         }
 
-        Logger.Log("Shutting down window");
-        _window.Shutdown();
-        
+        Shutdown();
+
     }
 
     private void init()
@@ -46,6 +53,29 @@ public class Application
         _window.Initialize();
 
         Time.Initialize();
+    }
+
+    public void HandleInput()
+    {
+        if (Input.IsKeyPressed(InputKeys.AstaKey.Escape))
+        {
+            _isRunning = false;
+        }
+
+        if (Input.IsKeyPressed(InputKeys.AstaKey.Space))
+        {
+            Console.WriteLine("Space bar pressed");
+        }
+
+    }
+
+    private void Shutdown()
+    {
+        Logger.Log("Shutting down application...");
+
+        _window.Shutdown();
+
+        Logger.Log("Application has been shut down.");
     }
 
 }

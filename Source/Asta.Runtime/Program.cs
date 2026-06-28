@@ -19,7 +19,6 @@ class Program
         Logger.Log("Connect to input system");
         Input.Initialize(engineWindow);
 
-
         app.run();
     }
 }

@@ -18,4 +18,6 @@ public interface iWindow
     public void SwapBuffers();
 
     public void Shutdown();
+
+    public void Render();
 }

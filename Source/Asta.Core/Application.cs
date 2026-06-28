@@ -38,7 +38,10 @@ public class Application
 
 
             //_window.PrepareRenderFrame();
-            //_window.SwapBuffers();
+            
+            _window.Render();
+            
+            _window.SwapBuffers();
             Time.CapFrameRate();
         }
 
@@ -53,6 +56,8 @@ public class Application
         _window.Initialize();
 
         Time.Initialize();
+
+
     }
 
     public void HandleInput()

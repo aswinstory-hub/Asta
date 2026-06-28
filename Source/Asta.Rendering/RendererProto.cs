@@ -2,7 +2,7 @@ using System.Drawing;
 using Silk.NET.Windowing;
 using Silk.NET.OpenGL;
 
-public class Renderer
+public class RendererProto
 {
     private static GL _gl = default!;
     private static uint _vao;

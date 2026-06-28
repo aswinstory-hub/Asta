@@ -1,9 +1,12 @@
+using System.Numerics;
 using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
+using Silk.NET.OpenGL;
 using Asta.Core;
 using Asta.Core.InputKeys;
-using System.Numerics;
+
+
 
 namespace Asta.Rendering.SilkWindow;
 
@@ -15,6 +18,8 @@ public class SilkWindow : iWindow, IInput
     private IKeyboard _keyboard = default!;
     private IMouse _mouse = default!;
 
+    private GL gl = default!; 
+
     public bool IsOpen => !_nativeWindow.IsClosing;
 
     public void SetWindow(string title, int width, int height)
@@ -22,7 +27,8 @@ public class SilkWindow : iWindow, IInput
         var options = WindowOptions.Default;
         options.Size = new Vector2D<int>(width, height);
         options.Title = title;
-        options.API = GraphicsAPI.Default; 
+        //options.VSync = true;
+        options.API = new GraphicsAPI(ContextAPI.OpenGL, ContextProfile.Core, ContextFlags.Default, new APIVersion(4, 5));
 
         _nativeWindow = Window.Create(options);
     }
@@ -43,6 +49,10 @@ public class SilkWindow : iWindow, IInput
         {
             _mouse = _inputContext.Mice[0];
         }
+
+        gl = _nativeWindow.CreateOpenGL();
+
+        gl.ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     }
     
 
@@ -92,4 +102,10 @@ public class SilkWindow : iWindow, IInput
         AstaMouseButton.Middle => MouseButton.Middle,
         _ => MouseButton.Unknown
     };
+
+    public void Render()
+    {
+        gl.Clear((uint)ClearBufferMask.ColorBufferBit);
+
+    }
 }

@@ -20,6 +20,22 @@ public class SilkWindow : iWindow, IInput
 
     private GL gl = default!; 
 
+
+    private static uint _vao;
+    private static uint _vbo;
+    private static uint _shaderProgram;
+
+    private static readonly float[] Vertices = 
+    {
+        -0.5f, -0.5f, 0.0f, // Bottom Left
+         0.5f, -0.5f, 0.0f, // Bottom Right
+         0.0f,  0.5f, 0.0f  // Top Center
+    };
+
+    private string VertexShaderSource = default!;
+    private string FragmentShaderSource = default!;
+
+
     public bool IsOpen => !_nativeWindow.IsClosing;
 
     public void SetWindow(string title, int width, int height)
@@ -57,12 +73,14 @@ public class SilkWindow : iWindow, IInput
     
 
     public void ProcessEvents() => _nativeWindow.DoEvents();
+    public void ClearScreen() => gl.Clear((uint) ClearBufferMask.ColorBufferBit | (uint) ClearBufferMask.DepthBufferBit);
     public void PrepareRenderFrame() => _nativeWindow.DoRender();
     public void SwapBuffers() => _nativeWindow.GLContext?.SwapBuffers();
     
     public void Shutdown()
     {
         _inputContext?.Dispose();
+        DisposeGL();
         _nativeWindow.Dispose();
     }
 
@@ -105,7 +123,101 @@ public class SilkWindow : iWindow, IInput
 
     public void Render()
     {
+        // Clear current Framebuffer pixels using pre-configured clearing attributes
         gl.Clear((uint)ClearBufferMask.ColorBufferBit);
 
+        // Target the active pipeline shader program
+        gl.UseProgram(_shaderProgram);
+
+        // Re-bind geometric vertex structure schema layout state
+        gl.BindVertexArray(_vao);
+
+        // Execute draw command arrays sequentially downstream onto rendering pipeline targets
+        gl.DrawArrays(PrimitiveType.Triangles, 0, 3);
+
     }
+
+    public void LoadRender()
+    {
+        // Create and Compile Vertex Shader
+        VertexShaderSource = Shader.LoadVertexShader();
+        uint vertexShader = gl.CreateShader(ShaderType.VertexShader);
+        gl.ShaderSource(vertexShader, VertexShaderSource);
+        gl.CompileShader(vertexShader);
+        CheckShaderCompileStatus(vertexShader);
+
+        // Create and Compile Fragment Shader
+        FragmentShaderSource = Shader.LoadFragmentShader();
+        uint fragmentShader = gl.CreateShader(ShaderType.FragmentShader);
+        gl.ShaderSource(fragmentShader, FragmentShaderSource);
+        gl.CompileShader(fragmentShader);
+        CheckShaderCompileStatus(fragmentShader);
+
+        // Link shaders into a final executable Program Pipeline on the GPU
+        _shaderProgram = gl.CreateProgram();
+        gl.AttachShader(_shaderProgram, vertexShader);
+        gl.AttachShader(_shaderProgram, fragmentShader);
+        gl.LinkProgram(_shaderProgram);
+        CheckProgramLinkStatus(_shaderProgram);
+
+        // Clean up standalone shader units now that they are linked
+        gl.DeleteShader(vertexShader);
+        gl.DeleteShader(fragmentShader);
+
+        // Generate and Bind VAO (Tracks memory layouts)
+        _vao = gl.GenVertexArray();
+        gl.BindVertexArray(_vao);
+
+        // Generate and Bind VBO (Holds vertex raw data arrays)
+        _vbo = gl.GenBuffer();
+        gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
+
+        // Send local memory data to graphics card high-speed memory safely
+        unsafe
+        {
+            fixed (void* v = Vertices)
+            {
+                gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(Vertices.Length * sizeof(float)), v, BufferUsageARB.StaticDraw);
+            }
+
+            // Define structural stride rules for shader attribute position mapping (Location 0)
+            gl.VertexAttribPointer(0, 3, GLEnum.Float, false, 3 * sizeof(float), (void*)0);    
+            gl.EnableVertexAttribArray(0);
+        }
+
+        // Unbind layout schemas to prevent accidental alterations
+        gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+        gl.BindVertexArray(0);
+
+    }
+
+    private void CheckShaderCompileStatus(uint shader)
+    {
+        gl.GetShader(shader, ShaderParameterName.CompileStatus, out int status);
+        if (status == 0)
+        {
+            string infoLog = gl.GetShaderInfoLog(shader);
+            throw new Exception($"GLSL Shader Compilation Failed: {infoLog}");
+        }
+    }
+
+    private void CheckProgramLinkStatus(uint program)
+    {
+        gl.GetProgram(program, ProgramPropertyARB.LinkStatus, out int status);
+        if (status == 0)
+        {
+            string infoLog = gl.GetProgramInfoLog(program);
+            throw new Exception($"GLSL Program Link Failed: {infoLog}");
+        }
+    }
+
+    private void DisposeGL()
+    {
+        // Safely deallocate native driver memory objects
+        gl.DeleteBuffer(_vbo);
+        gl.DeleteVertexArray(_vao);
+        gl.DeleteProgram(_shaderProgram);
+        gl.Dispose();
+    }
+
 }

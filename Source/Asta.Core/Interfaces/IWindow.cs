@@ -19,5 +19,9 @@ public interface iWindow
 
     public void Shutdown();
 
+    public void ClearScreen();
+
     public void Render();
+
+    public void LoadRender();
 }

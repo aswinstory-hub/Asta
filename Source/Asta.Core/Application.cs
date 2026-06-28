@@ -35,12 +35,13 @@ public class Application
             HandleInput();
 
             // Console.WriteLine($"Current Time: {Time.CurrentTime:F2}s, Delta Time: {Time.DeltaTime:F4}s, Instant FPS: {Time.InstantFps:F2}, Average FPS: {Time.AverageFps:F2}");
-
+            
+            _window.ClearScreen();
 
             //_window.PrepareRenderFrame();
-            
+
             _window.Render();
-            
+
             _window.SwapBuffers();
             Time.CapFrameRate();
         }
@@ -57,7 +58,7 @@ public class Application
 
         Time.Initialize();
 
-
+        _window.LoadRender();
     }
 
     public void HandleInput()

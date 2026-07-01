@@ -75,6 +75,17 @@ public class Application
 
     }
 
+    private void Render()
+    {
+        _window.ClearScreen();
+
+        //_window.PrepareRenderFrame();
+
+        _window.Render();
+
+        _window.SwapBuffers();
+    }
+
     private void Shutdown()
     {
         Logger.Log("Shutting down application...");

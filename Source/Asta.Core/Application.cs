@@ -28,9 +28,9 @@ public class Application
 
         while (_window.IsOpen && _isRunning)
         {
-            _window.ProcessEvents();
-
             Time.Update();
+            
+            _window.ProcessEvents();
 
             HandleInput();
 
@@ -70,7 +70,7 @@ public class Application
 
         if (Input.IsKeyPressed(InputKeys.AstaKey.Space))
         {
-            Console.WriteLine("Space bar pressed");
+            Logger.Log("Space bar pressed");
         }
 
     }
